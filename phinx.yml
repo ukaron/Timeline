@@ -1,0 +1,35 @@
+paths:
+    migrations: '%%PHINX_CONFIG_DIR%%/database/migrations'
+    seeds: '%%PHINX_CONFIG_DIR%%/database/seeds'
+
+environments:
+    default_migration_table: phinxlog
+    default_database: development
+    production:
+        adapter: mysql
+        host: localhost
+        name: ukaron_db
+        user: root
+        pass: 'root'
+        port: 3307
+        charset: utf8
+
+    development:
+        adapter: mysql
+        host: 192.168.99.101
+        name: development_db
+        user: root
+        pass: 'root'
+        port: 3307
+        charset: utf8
+
+    testing:
+        adapter: mysql
+        host: 192.168.99.101
+        name: testing_db
+        user: root
+        pass: 'root'
+        port: 3307
+        charset: utf8
+
+version_order: creation
