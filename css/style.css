@@ -57,7 +57,7 @@ body {
     display: flex;
     position: relative;
     height: 750px;
-    width: 65%;
+    width: 100%;
 
     margin-top: 10px;
     margin-left: 10px;
@@ -169,7 +169,17 @@ body {
     height: 15%;
 }
 #post{
-    margin: auto;
     font-size: 25px;
-    margin-top: 30px;
+    margin: 10px auto   10px;
+    width: 100%;
+}
+.pagin{
+    flex: 0 0 auto;
+    margin-top: 50px;
+}
+.news{
+    margin: 10px auto  10px;
+    width: 90%;
+    height: 300px;
+    background-color: #ff6e00;
 }

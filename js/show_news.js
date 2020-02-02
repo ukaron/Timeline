@@ -20,26 +20,22 @@ $(document).ready(function () {
                 if (data.length > 0){
                     let i = 0;
                     for (var value in data) {
+                        let div = document.createElement('div');
+                        div.className= 'news';
+                        posts.append(div);
                         for (var index in data[value]) {
-                            let div = document.createElement('div');
-                            div.id = index;
-                            div.className= value;
-                            posts.append(div);
                             if (index == 1 ) {
                                 let h1 = document.createElement('h1');
-                                h1.id = index;
                                 div.append(h1);
                                 h1.append(data[value][index]);
                             }
                             if (index == 2 ){
                                 let h2 = document.createElement('h2');
-                                h2.id = index;
                                 div.append(h2);
                                 h2.append(data[value][index]);
                             }
                             if (index == 3 ){
                                 let h3 = document.createElement('h3');
-                                h3.id = index;
                                 div.append(h3);
                                 h3.append(data[value][index]);
                             }
@@ -50,7 +46,6 @@ $(document).ready(function () {
                                     a.href = "/main/show_tag/?tag="+ data[value][index][i][1]+"&page=0";
                                     div.append(a);
                                     let h3 = document.createElement('h3');
-                                    h3.id = index;
                                     a.append(h3);
                                     h3.append('#'+ data[value][index][i][0]);
                                 }
