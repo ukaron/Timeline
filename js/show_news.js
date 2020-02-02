@@ -43,7 +43,7 @@ $(document).ready(function () {
                                 let i = 0;
                                 while (i++ < data[value][index].length - 1){
                                     let a = document.createElement('a');
-                                    a.href = "/main/show_tag/?tag="+ data[value][index][i][1]+"&page=0";
+                                    a.href = "/main/show_tag/?tag="+ data[value][index][i][1]+"&page=1";
                                     div.append(a);
                                     let h3 = document.createElement('h3');
                                     a.append(h3);

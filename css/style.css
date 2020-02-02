@@ -174,7 +174,10 @@ body {
     width: 100%;
 }
 .pagin{
-    flex: 0 0 auto;
+    margin: 10px auto  10px;
+    width: 90%;
+    height: 300px;
+    background-color: #ff6e00;
     margin-top: 50px;
 }
 .news{

@@ -80,7 +80,7 @@ class Model_Moder extends Model
         $find->execute(array($tag_name));
         if (($row_1 = $find->fetch()) != true)
         {
-            $add = $connect->DBH->prepare("INSERT INTO tags (tag_name) VALUES ('$tag_name');");
+            $add = $connect->DBH->prepare("INSERT IGNORE INTO tags (tag_name) VALUES ('$tag_name');");
             $add->execute();
             if ($add == true)
                 return "New tag has been created";
@@ -107,12 +107,15 @@ class Model_Moder extends Model
 
     public function edit_news($news_id)
     {
-        $connect = new connectBD();
-        $connect->connect();
-        $find = $connect->DBH->prepare("SELECT * FROM news WHERE news_id = ? ;");
-        $find->execute(array($news_id));
-        $row = $find->fetchAll();
-        $row[0]['tags'] = $this->get_tags_name_by_news_id($row[0]['news_id']);
+        if ($_GET['id'] != '')
+        {
+            $connect = new connectBD();
+            $connect->connect();
+            $find = $connect->DBH->prepare("SELECT * FROM news WHERE news_id = ? ;");
+            $find->execute(array($news_id));
+            $row = $find->fetchAll();
+            $row[0]['tags'] = $this->get_tags_name_by_news_id($row[0]['news_id']);
+        }
         return $row[0];
     }
 
@@ -121,40 +124,24 @@ class Model_Moder extends Model
     {
         $connect = new connectBD();
         $connect->connect();
-        $find = $connect->DBH->prepare("SELECT tag_id FROM link_news_tag WHERE news_id = ? ;");
+        $find = $connect->DBH->prepare("SELECT *  FROM news
+                                        INNER JOIN link_news_tag lnt on news.news_id = lnt.news_id
+                                        INNER JOIN tags t on lnt.tag_id = t.tag_id
+                                        WHERE news.news_id = ? ORDER BY public_date DESC;");
         $find->execute(array($news_id));
         $tags = $find->fetchAll();
-        foreach ($tags as $tag_id)
-        {
-        $content[] = $this->get_tag_name_by_tag_id($tag_id);
-        }
+        $content[] = $tags;
         return $content;
     }
-    public function get_tag_name_by_tag_id($tag_id)
-    {
-        $connect = new connectBD();
-        $connect->connect();
-        $find = $connect->DBH->prepare("SELECT tag_name FROM tags WHERE tag_id = ? ;");
-        $find->execute(array($tag_id[0]));
-        $tags_name = $find->fetch();
-        return $tags_name;
-    }
-    public function get_tag_id_by_tag_name($tag_name)
-    {
-        $connect = new connectBD();
-        $connect->connect();
-        $find = $connect->DBH->prepare("SELECT tag_id FROM tags WHERE tag_name = ? ;");
-        $find->execute(array($tag_name[0]));
-        $tags_id = $find->fetch();
-        return $tags_id;
-    }
+
+
 
     public function handler($start_from)
     {
         $this->login = $_SESSION['user'];
         $connect = new connectBD();
         $connect->connect();
-        $find = $connect->DBH->prepare("SELECT * FROM news WHERE author_login = ? ORDER BY public_date DESC LIMIT $start_from, 10 ; ");
+        $find = $connect->DBH->prepare("SELECT * FROM news WHERE author_login = ? AND status=1 ORDER BY public_date DESC LIMIT $start_from, 10 ; ");
         $find->execute(array($this->login));
         $row = $find->fetchAll();
         $content[] = $row;
@@ -165,7 +152,7 @@ class Model_Moder extends Model
         $this->login = $_SESSION['user'];
         $connect = new connectBD();
         $connect->connect();
-        $find = $connect->DBH->prepare("SELECT * FROM news WHERE author_login = ? ORDER BY public_date DESC LIMIT 10;");
+        $find = $connect->DBH->prepare("SELECT * FROM news WHERE author_login = ? AND status=1 ORDER BY public_date DESC LIMIT 10;");
         $find->execute(array($this->login));
         $row = $find->fetchAll();
         $content[] = $row;
@@ -174,23 +161,51 @@ class Model_Moder extends Model
 
     public function add_tag_for_news($news_id, $tag_name)
     {
+        $this->new_tag($tag_name);
         $tag_id = $this->get_tag_id_by_tag_name($tag_name);
-        if (!isset($tag_id))
-        {
-            $this->new_tag($tag_name);
-            $tag_id = $this->get_tag_id_by_tag_name($tag_name);
-            $connect = new connectBD();
-            $connect->connect();
-            $add = $connect->DBH->prepare("INSERT INTO link_news_tag (news_id, tag_id)
-                                            VALUES ('$news_id','$tag_id');");
-            $add->execute();
-            $add->fetchAll();
-            if ($add == true)
-            {
-                return $tag_name;
-            }
-            return false;
-        }
-        return "ERROR";
+        $connect = new connectBD();
+        $connect->connect();
+        $add = $connect->DBH->prepare("INSERT INTO link_news_tag (news_id, tag_id)
+                                            VALUES ('$news_id','$tag_id[0]');");
+        $add->execute();
+        header('Location:/moder/edit_news/?id='.$news_id.'');
+    }
+
+    public function get_tag_id_by_tag_name($tag_name)
+    {
+        $connect = new connectBD();
+        $connect->connect();
+        $find = $connect->DBH->prepare("SELECT tag_id FROM tags WHERE tag_name = ? ;");
+        $find->execute(array($tag_name));
+        $tags_id = $find->fetchAll();
+        return $tags_id[0];
+    }
+
+    public function edit_subj($news_id1, $new_subj)
+    {
+        $news_id = $news_id1;
+        $connect = new connectBD();
+        $connect->connect();
+        $add = $connect->DBH->prepare("UPDATE news SET subj = ? WHERE news_id = ?");
+        $add->execute(array($new_subj, $news_id));
+        header('Location:/moder/edit_news/?id='.$news_id);
+    }
+    public function edit_info($news_id1, $new_info)
+    {
+        $news_id = $news_id1;
+        $connect = new connectBD();
+        $connect->connect();
+        $add = $connect->DBH->prepare("UPDATE news SET info = ? WHERE news_id = ?");
+        $add->execute(array($new_info, $news_id));
+        header("Location:/moder/edit_news/?id=".$news_id);
+    }
+
+    public function delete_news($news_id)
+    {
+        $connect = new connectBD();
+        $connect->connect();
+        $add = $connect->DBH->prepare("UPDATE news SET status = ? WHERE news_id = ?");
+        $add->execute(array(0, $news_id));
+        header('Location:/moder');
     }
 }

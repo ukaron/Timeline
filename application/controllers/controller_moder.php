@@ -71,7 +71,7 @@ class Controller_Moder extends Controller
 
     function action_edit_news()
     {
-        if (isset($_GET['id']))
+        if ($_GET['id'] != '')
         {
             $news_id = $_GET['id'];
             $data = $this->model->edit_news($news_id);
@@ -80,6 +80,39 @@ class Controller_Moder extends Controller
         }
     }
 
+    function action_delete_news()
+    {
+        if(isset($_POST['news_id']))
+        {
+            $news_id = $_POST['id'];
+            $this->model->delete_news($news_id);
+        }
+        elseif ($_GET['id'] != '')
+        {
+            $news_id = $_GET['id'];
+            $this->model->delete_news($news_id);
+        }
+    }
+
+    function action_edit_subj()
+    {
+        if(isset($_POST['news_id']))
+        {
+            $news_id = $_POST['news_id'];
+            $new_subj = $_POST['new_subj'];
+            $this->model->edit_subj($news_id, $new_subj);
+        }
+
+    }
+    function action_edit_info()
+    {
+        if(isset($_POST['news_id']))
+        {
+            $news_id = $_POST['news_id'];
+            $new_info = $_POST['new_info'];
+            $this->model->edit_info($news_id, $new_info);
+        }
+    }
 
     public function action_add_tag_for_news()
     {

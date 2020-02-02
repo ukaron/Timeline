@@ -7,7 +7,7 @@ class Model_Main extends Model
     {
         $connect = new connectBD();
         $connect->connect();
-        $find = $connect->DBH->prepare("SELECT * FROM news ORDER BY public_date DESC LIMIT 10;");
+        $find = $connect->DBH->prepare("SELECT * FROM news WHERE status=1 ORDER BY public_date DESC LIMIT 10;");
         $find->execute();
         $row = $find->fetchAll();
         $content = $row;

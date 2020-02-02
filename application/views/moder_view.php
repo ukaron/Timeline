@@ -13,7 +13,6 @@
                         <th>  <input id="bottom" type="submit" name="submit" value="OK"></th>
 
                         </tr>
-
                     </table>
                 </form>
                 <form action="/moder/show_tags" target="_blank">
@@ -23,7 +22,7 @@
                 <form action="/moder/new_news" method="POST" name="sign_in">
                     <table>
                         <tr>
-                        $    <th> <input type="text" class="form-control" name="news_name" id="news_name"
+                            <th> <input type="text" class="form-control" name="news_name" id="news_name"
                                         placeholder="Input subject a new post"></th>
                         </tr>
                         <tr>
