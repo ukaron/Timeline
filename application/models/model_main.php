@@ -7,7 +7,7 @@ class Model_Main extends Model
     {
         $connect = new connectBD();
         $connect->connect();
-        $find = $connect->DBH->prepare("SELECT * FROM news WHERE status=1 ORDER BY public_date DESC LIMIT 10;");
+        $find = $connect->DBH->prepare("SELECT * FROM news_db.news WHERE status=1 ORDER BY public_date DESC LIMIT 10;");
         $find->execute();
         $row = $find->fetchAll();
         $content = $row;
@@ -20,9 +20,9 @@ class Model_Main extends Model
     {
         $connect = new connectBD();
         $connect->connect();
-        $find = $connect->DBH->prepare("SELECT tag_name, tags.tag_id FROM link_news_tag
-                                          INNER JOIN tags ON link_news_tag.tag_id = tags.tag_id
-                                         INNER JOIN news n on link_news_tag.news_id = n.news_id
+        $find = $connect->DBH->prepare("SELECT tag_name, tags.tag_id FROM news_db.link_news_tag
+                                          INNER JOIN news_db.tags ON news_db.link_news_tag.tag_id = tags.tag_id
+                                         INNER JOIN news_db.news n on news_db.link_news_tag.news_id = n.news_id
                                          WHERE n.news_id = ?");
         $find->execute(array($news_id));
         $tags[] = $find->fetchAll();
@@ -33,7 +33,7 @@ class Model_Main extends Model
     {
         $connect = new connectBD();
         $connect->connect();
-        $find = $connect->DBH->prepare("SELECT news_id, subj, info, public_date FROM news ORDER BY public_date DESC LIMIT $start_from, 10 ");
+        $find = $connect->DBH->prepare("SELECT news_id, subj, info, public_date FROM news_db.news ORDER BY public_date DESC LIMIT $start_from, 10 ");
         $find->execute();
         $row = $find->fetchAll();
         $content = $row;
@@ -47,9 +47,9 @@ class Model_Main extends Model
 
         $connect = new connectBD();
         $connect->connect();
-        $find = $connect->DBH->prepare("SELECT subj,info, public_date, n.news_id  FROM link_news_tag
-                                        INNER JOIN tags ON link_news_tag.tag_id = tags.tag_id
-                                        INNER JOIN news n on link_news_tag.news_id = n.news_id
+        $find = $connect->DBH->prepare("SELECT subj,info, public_date, n.news_id  FROM news_db.link_news_tag
+                                        INNER JOIN news_db.tags ON news_db.link_news_tag.tag_id = tags.tag_id
+                                        INNER JOIN news_db.news n on news_db.link_news_tag.news_id = n.news_id
                                         WHERE tags.tag_id = ? ORDER BY public_date DESC ;");
         $find->execute(array($tag_id));
         $count_page = $find->rowCount();

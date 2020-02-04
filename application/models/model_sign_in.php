@@ -37,8 +37,8 @@ class Model_Sign_In extends Model
         $this->pass = $user['pass'];
         $connect = new connectBD();
         $connect->connect();
-        $query = $connect->DBH->prepare("SELECT login_a FROM admins WHERE login_a='" . $this->login . "'
-                                                                            AND pass_a = '" . $this->pass . "';");
+        $query = $connect->DBH->prepare("SELECT login_a FROM news_db.admins WHERE login_a=?
+                                                                            AND pass_a = ?;");
         $query->execute(array($this->login, $this->pass));
         if (($row_1 = $query->fetch()) == true)
             return true;
@@ -52,8 +52,8 @@ class Model_Sign_In extends Model
         $this->pass = $user['pass'];
         $connect = new connectBD();
         $connect->connect();
-        $query = $connect->DBH->prepare("SELECT login_m FROM moderators WHERE login_m ='" . $this->login . "'
-                                                                            AND pass_m = '" . $this->pass . "';");
+        $query = $connect->DBH->prepare("SELECT login_m FROM news_db.moderators WHERE login_m = ?
+                                                                            AND pass_m = ?;");
         $query->execute(array($this->login, $this->pass));
         if (($row_1 = $query->fetch()) == true)
             return true;
@@ -66,8 +66,8 @@ class Model_Sign_In extends Model
         $this->pass = $user['pass'];
         $connect = new connectBD();
         $connect->connect();
-        $query = $connect->DBH->prepare("SELECT login FROM followers WHERE login='" . $this->login . "'
-                                                                            AND pass = '" . $this->pass . "';");
+        $query = $connect->DBH->prepare("SELECT login FROM news_db.followers WHERE login= ?
+                                                                            AND pass = ?;");
         $query->execute(array($this->login, $this->pass));
         if (($row_1 = $query->fetch()) == true)
             return true;

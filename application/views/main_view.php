@@ -1,4 +1,4 @@
-
+<?php print_r($data); ?>
 <div class="main_block">
         <div id="post">
         <?php foreach ($data as $post) : ?>

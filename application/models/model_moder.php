@@ -13,12 +13,12 @@ class Model_Moder extends Model
         $this->login = $_SESSION['user'];
         $connect = new connectBD();
         $connect->connect();
-        $query = $connect->DBH->prepare("SELECT * FROM moderators WHERE login_m = ? AND conf_m = ?");
-        $query->execute(array($this->login, true));
+        $query = $connect->DBH->prepare("SELECT * FROM news_db.moderators WHERE login_m = ? AND conf_m = ? AND login_m = ?");
+        $query->execute(array($this->login, true, $this->login));
         if (($row_1 = $query->fetch()) == true)
             return true;
-        $query = $connect->DBH->prepare("SELECT * FROM admins WHERE login_a = ? AND conf_a = ?");
-        $query->execute(array($this->login, true));
+        $query = $connect->DBH->prepare("SELECT * FROM news_db.admins WHERE login_a = ? AND conf_a = ?  AND login_a = ?");
+        $query->execute(array($this->login, true, $this->login));
         if (($row_1 = $query->fetch()) == true)
             return true;
         return false;
@@ -76,7 +76,7 @@ class Model_Moder extends Model
     {
         $connect = new connectBD();
         $connect->connect();
-        $find = $connect->DBH->prepare("SELECT * FROM tags WHERE tag_name = ? ;");
+        $find = $connect->DBH->prepare("SELECT * FROM news_db.tags WHERE tag_name = ? ;");
         $find->execute(array($tag_name));
         if (($row_1 = $find->fetch()) != true)
         {
@@ -93,11 +93,11 @@ class Model_Moder extends Model
         $this->login = $_SESSION['user'];
         $connect = new connectBD();
         $connect->connect();
-        $add = $connect->DBH->prepare("INSERT INTO news (subj, author_login, public_date, info ) VALUES ('$news_name', '$this->login', NOW(),'$news_info');");
-        $add->execute();
+        $add = $connect->DBH->prepare("INSERT INTO news_db.news (subj, author_login, public_date, info ) VALUES (?, ?, NOW(), ?);");
+        $add->execute(array($news_name, $this->login, $news_info));
         if ($add == true)
         {
-            $find = $connect->DBH->prepare("SELECT * FROM news WHERE author_login = ? ORDER BY public_date DESC;");
+            $find = $connect->DBH->prepare("SELECT * FROM news_db.news WHERE author_login = ? ORDER BY public_date DESC;");
             $find->execute(array($this->login));
             $row = $find->fetchAll();
             return $row[0];
@@ -111,7 +111,7 @@ class Model_Moder extends Model
         {
             $connect = new connectBD();
             $connect->connect();
-            $find = $connect->DBH->prepare("SELECT * FROM news WHERE news_id = ? ;");
+            $find = $connect->DBH->prepare("SELECT * FROM news_db.news WHERE news_id = ? ;");
             $find->execute(array($news_id));
             $row = $find->fetchAll();
             $row[0]['tags'] = $this->get_tags_name_by_news_id($row[0]['news_id']);
@@ -124,7 +124,7 @@ class Model_Moder extends Model
     {
         $connect = new connectBD();
         $connect->connect();
-        $find = $connect->DBH->prepare("SELECT *  FROM news
+        $find = $connect->DBH->prepare("SELECT *  FROM news_db.news
                                         INNER JOIN link_news_tag lnt on news.news_id = lnt.news_id
                                         INNER JOIN tags t on lnt.tag_id = t.tag_id
                                         WHERE news.news_id = ? ORDER BY public_date DESC;");
@@ -141,8 +141,8 @@ class Model_Moder extends Model
         $this->login = $_SESSION['user'];
         $connect = new connectBD();
         $connect->connect();
-        $find = $connect->DBH->prepare("SELECT * FROM news WHERE author_login = ? AND status=1 ORDER BY public_date DESC LIMIT $start_from, 10 ; ");
-        $find->execute(array($this->login));
+        $find = $connect->DBH->prepare("SELECT * FROM news_db.news WHERE author_login = ? AND status=1 ORDER BY public_date DESC LIMIT ?, 10 ; ");
+        $find->execute(array($this->login, $start_from));
         $row = $find->fetchAll();
         $content[] = $row;
         echo json_encode($content[0]);
@@ -152,7 +152,7 @@ class Model_Moder extends Model
         $this->login = $_SESSION['user'];
         $connect = new connectBD();
         $connect->connect();
-        $find = $connect->DBH->prepare("SELECT * FROM news WHERE author_login = ? AND status=1 ORDER BY public_date DESC LIMIT 10;");
+        $find = $connect->DBH->prepare("SELECT * FROM news_db.news WHERE author_login = ? AND status=1 ORDER BY public_date DESC LIMIT 10;");
         $find->execute(array($this->login));
         $row = $find->fetchAll();
         $content[] = $row;
@@ -165,9 +165,9 @@ class Model_Moder extends Model
         $tag_id = $this->get_tag_id_by_tag_name($tag_name);
         $connect = new connectBD();
         $connect->connect();
-        $add = $connect->DBH->prepare("INSERT INTO link_news_tag (news_id, tag_id)
-                                            VALUES ('$news_id','$tag_id[0]');");
-        $add->execute();
+        $add = $connect->DBH->prepare("INSERT INTO news_db.link_news_tag (news_id, tag_id)
+                                            VALUES (?, ?);");
+        $add->execute(array($news_id, $tag_id));
         header('Location:/moder/edit_news/?id='.$news_id.'');
     }
 
@@ -175,7 +175,7 @@ class Model_Moder extends Model
     {
         $connect = new connectBD();
         $connect->connect();
-        $find = $connect->DBH->prepare("SELECT tag_id FROM tags WHERE tag_name = ? ;");
+        $find = $connect->DBH->prepare("SELECT tag_id FROM news_db.tags WHERE tag_name = ? ;");
         $find->execute(array($tag_name));
         $tags_id = $find->fetchAll();
         return $tags_id[0];
@@ -186,7 +186,7 @@ class Model_Moder extends Model
         $news_id = $news_id1;
         $connect = new connectBD();
         $connect->connect();
-        $add = $connect->DBH->prepare("UPDATE news SET subj = ? WHERE news_id = ?");
+        $add = $connect->DBH->prepare("UPDATE news_db.news SET subj = ? WHERE news_id = ?");
         $add->execute(array($new_subj, $news_id));
         header('Location:/moder/edit_news/?id='.$news_id);
     }
@@ -195,7 +195,7 @@ class Model_Moder extends Model
         $news_id = $news_id1;
         $connect = new connectBD();
         $connect->connect();
-        $add = $connect->DBH->prepare("UPDATE news SET info = ? WHERE news_id = ?");
+        $add = $connect->DBH->prepare("UPDATE news_db.news SET info = ? WHERE news_id = ?");
         $add->execute(array($new_info, $news_id));
         header("Location:/moder/edit_news/?id=".$news_id);
     }
@@ -204,7 +204,7 @@ class Model_Moder extends Model
     {
         $connect = new connectBD();
         $connect->connect();
-        $add = $connect->DBH->prepare("UPDATE news SET status = ? WHERE news_id = ?");
+        $add = $connect->DBH->prepare("UPDATE news_db.news SET status = ? WHERE news_id = ?");
         $add->execute(array(0, $news_id));
         header('Location:/moder');
     }

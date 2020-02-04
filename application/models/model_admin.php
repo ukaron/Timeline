@@ -11,8 +11,8 @@ class Model_Admin extends Model
     {
         $connect = new connectBD();
         $connect->connect();
-        $query = $connect->DBH->prepare("SELECT * FROM admins WHERE login_a = ? AND conf_a = ?");
-        $query->execute(array($admin, true));
+        $query = $connect->DBH->prepare("SELECT * FROM news_db.admins WHERE login_a = ? AND conf_a = ? AND login_a=?");
+        $query->execute(array($admin, true, $admin));
         if (($row_1 = $query->fetch()) == true)
             return true;
         return false;
@@ -27,9 +27,9 @@ class Model_Admin extends Model
             $connect = new connectBD();
             $connect->connect();
             $passHash = hash(sha256, $this->pass);
-            $conf = $connect->DBH->prepare("UPDATE admins SET conf_a = ? WHERE login_a = ?");
+            $conf = $connect->DBH->prepare("UPDATE news_db.admins SET conf_a = ? WHERE login_a = ?");
             $conf->execute(array('1', $login));
-            $add = $connect->DBH->prepare("UPDATE admins SET pass_a = ? WHERE login_a = ?");
+            $add = $connect->DBH->prepare("UPDATE news_db.admins SET pass_a = ? WHERE login_a = ?");
             $add->execute(array($passHash, $login));
             if ($add == true)
                 return true;

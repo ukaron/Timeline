@@ -59,8 +59,8 @@ class Model_Sign_Up extends Model
         $connect->connect();
         $passHash = hash(sha256, $this->pass_c);
 
-        $add = $connect->DBH->prepare("INSERT INTO followers (login, pass, email) VALUES ('$this->login_c','$passHash', '$this->email_c');");
-        $add->execute();
+        $add = $connect->DBH->prepare("INSERT INTO followers (login, pass, email) VALUES (?,?,?);");
+        $add->execute(array($this->login_c,$passHash, $this->email_c));
         if ($add == true)
             return true;
         else
@@ -130,8 +130,8 @@ class Model_Sign_Up extends Model
         $connect = new connectBD();
         $connect->connect();
         $query = $connect->DBH->prepare("SELECT *
-FROM admins, followers, moderators
-WHERE admins.login_a = ? or followers.login = ? or moderators.login_m = ? ;");
+                                                FROM news_db.admins, news_db.followers, news_db.moderators
+                                                WHERE admins.login_a = ? or followers.login = ? or moderators.login_m = ? ;");
         $query->execute(array($this->login_c,$this->login_c,$this->login_c));
         if (($row_1 = $query->fetch()) == true)
             return false;
