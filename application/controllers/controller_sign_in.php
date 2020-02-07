@@ -1,8 +1,6 @@
 <?php
 class Controller_Sign_In extends Controller
 {
-    public $login;
-    public $pass;
     function action_index()
     {
         $this->model = new Model_Sign_In();
